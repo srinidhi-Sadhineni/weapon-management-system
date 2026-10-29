@@ -104,7 +104,7 @@ if st.session_state.get("db_connected", False):
     f"SELECT COUNT(*) AS total FROM `{table}`",
     host, user, password, port, database
 )
-                )
+                
                 counts[table] = int(df.iloc[0]["total"])
 
             c1, c2, c3 = st.columns(3)
