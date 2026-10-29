@@ -14,20 +14,21 @@ st.caption("DBMS Mini Project | MySQL + Streamlit")
 # Database connection settings
 st.sidebar.header("MySQL Connection")
 
-host = st.sidebar.text_input("Host", value="localhost")
-user = st.sidebar.text_input("MySQL username", value="root")
-password = st.sidebar.text_input(
-    "MySQL password",
-    type="password"
-)
+host = st.secrets["DB_HOST"]
+user = st.secrets["DB_USERNAME"]
+password = st.secrets["DB_PASSWORD"]
+port = int(st.secrets["DB_PORT"])
+database = st.secrets["DB_NAME"]
 
 @st.cache_data(ttl=10)
-def load_data(query, host, user, password):
+def load_data(query, host, user, password, port, database):
     conn = mysql.connector.connect(
         host=host,
         user=user,
         password=password,
-        database="weapon_management_db"
+        port=port,
+        database=database,
+        ssl_ca="ca.pem"
     )
     try:
         return pd.read_sql(query, conn)
@@ -100,8 +101,9 @@ if st.session_state.get("db_connected", False):
 
             for table in tables:
                 df = load_data(
-                    f"SELECT COUNT(*) AS total FROM `{table}`",
-                    host, user, password
+    f"SELECT COUNT(*) AS total FROM `{table}`",
+    host, user, password, port, database
+)
                 )
                 counts[table] = int(df.iloc[0]["total"])
 
@@ -122,7 +124,7 @@ if st.session_state.get("db_connected", False):
                 FROM Weapon
                 GROUP BY status
                 """,
-                host, user, password
+                host, user, password, port, database
             )
             st.dataframe(status_df, use_container_width=True)
 
@@ -133,7 +135,7 @@ if st.session_state.get("db_connected", False):
                 FROM Weapon
                 GROUP BY condition_status
                 """,
-                host, user, password
+               host, user, password, port, database
             )
             st.dataframe(condition_df, use_container_width=True)
 
@@ -141,8 +143,7 @@ if st.session_state.get("db_connected", False):
             st.subheader(page)
 
             df = load_data(
-                queries[page], host, user, password
-            )
+                queries[page], host, user, password, port, database
 
             st.metric("Records Found", len(df))
             st.dataframe(df, use_container_width=True)
