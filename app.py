@@ -144,7 +144,7 @@ if st.session_state.get("db_connected", False):
 
             df = load_data(
                 queries[page], host, user, password, port, database
-
+            )
             st.metric("Records Found", len(df))
             st.dataframe(df, use_container_width=True)
 
