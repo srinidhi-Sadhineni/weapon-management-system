@@ -23,13 +23,14 @@ database = st.secrets["DB_NAME"]
 @st.cache_data(ttl=10)
 def load_data(query, host, user, password, port, database):
     conn = mysql.connector.connect(
-        host=host,
-        user=user,
-        password=password,
-        port=port,
-        database=database,
-        ssl_ca="ca.pem"
-    )
+    host=st.secrets["DB_HOST"],
+    port=int(st.secrets["DB_PORT"]),
+    user=st.secrets["DB_USERNAME"],
+    password=st.secrets["DB_PASSWORD"],
+    database=st.secrets["DB_NAME"],
+    ssl_ca="ca.pem",
+    ssl_verify_cert=True
+)
     try:
         return pd.read_sql(query, conn)
     finally:
