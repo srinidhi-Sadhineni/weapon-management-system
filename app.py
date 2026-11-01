@@ -28,8 +28,7 @@ def load_data(query, host, user, password, port, database):
     user=st.secrets["DB_USERNAME"],
     password=st.secrets["DB_PASSWORD"],
     database=st.secrets["DB_NAME"],
-    ssl_ca="ca.pem",
-    ssl_verify_cert=True
+    ssl_verify_cert=False
 )
     try:
         return pd.read_sql(query, conn)
